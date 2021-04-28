@@ -1,17 +1,26 @@
 gsap.registerPlugin(ScrollTrigger);
 
+gsap.registerEffect({
+  name: "fade",
+  effect: (targets, config) => {
+      return gsap.to(targets, {duration: config.duration, opacity: 0});
+  },
+  defaults: {duration: 2}, //defaults get applied to any "config" object passed to the effect
+  extendTimeline: true, //now you can call the effect directly on any GSAP timeline to have the result immediately inserted in the position you define (default is sequenced at the end)
+});
+
 // -------------------------------- sliding effect -------------------------------- //
 
 gsap.to(".content:not(:last-child)", {
     yPercent: -100,
     ease: "slow(0.9,0.4, false)",
-    stagger: .2,
+    stagger: .5,
     scrollTrigger: {
         trigger: "content",
         start: "top top",
-        end: "+=500%",
+        end: "=500%",
         scrub: 1,
-        pin: true,
+        pin: true
     }
 });
 
@@ -24,7 +33,7 @@ const navLinks = gsap.utils.toArray(".section_nav a");
 navLinks.forEach((link, i) => {
 link.addEventListener("click", e => {
     e.preventDefault();
-    gsap.to(window, {scrollTo: i * innerHeight});
+    gsap.to(window, {scrollTo: i * innerHeight, ease:"back.inOut", duration:1.5});
 });
 });
 
@@ -49,7 +58,7 @@ content.forEach((content, i) => {
 })
 });
 
-// -------------------------------- Map -------------------------------- //
+// -------------------------------- Intro / Map -------------------------------- //
 
 
 
@@ -61,9 +70,27 @@ gsap.to(".worldmap path", 1, {
     from:".China"},
     scrollTrigger: {
       trigger:".intro",
-      start:"top top",
-      markers:true}
+      start:"top 100%",
+      markers:true,
+      toggleActions: "play none none reverse"}
 })
 
 
-gsap.from('.test', {duration: 2, y: "-100%", ease:"bounce"});
+// -------------------------------- Port -------------------------------- //
+
+gsap.to(".column-3",  {
+  duration: 4,
+  opacity: 0,
+  ease: "steps(4)",
+  stagger: {
+    grid: [1,4],
+    from: "random",
+    amount: 1
+  },
+  scrollTrigger: {
+    trigger:".Port",
+    start:"top 100%",
+    markers:true,
+    toggleActions: "play none none reverse"
+  },
+});
