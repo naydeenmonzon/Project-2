@@ -1,44 +1,25 @@
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
-gsap.registerEffect({
-  name: "fade",
-  effect: (targets, config) => {
-      return gsap.to(targets, {duration: config.duration, opacity: 0});
-  },
-  defaults: {duration: 2}, //defaults get applied to any "config" object passed to the effect
-  extendTimeline: true, //now you can call the effect directly on any GSAP timeline to have the result immediately inserted in the position you define (default is sequenced at the end)
-});
 
-// -------------------------------- sliding effect -------------------------------- //
-
-gsap.to(".content:not(:last-child)", {
-    yPercent: -100,
-    ease: "slow(0.9,0.4, false)",
-    stagger: .5,
-    scrollTrigger: {
-        trigger: "content",
-        start: "top top",
-        end: "=500%",
-        scrub: 1,
-        pin: true
-    }
-});
 
 
 // -------------------------------- Navigation -------------------------------- //
 
-gsap.set(".content", { zIndex: (i, target, targets) => targets.length - i });
+
+
+gsap.set(".page", { zIndex: (i, target, targets) => targets.length - i });
 
 const navLinks = gsap.utils.toArray(".section_nav a");
 navLinks.forEach((link, i) => {
 link.addEventListener("click", e => {
     e.preventDefault();
-    gsap.to(window, {scrollTo: i * innerHeight, ease:"back.inOut", duration:1.5});
-});
+    gsap.to(window, {scrollTo: i * innerHeight, duration: 2.5, ease: "back.inOut(1.7)"});
+  });
 });
 
-const content = gsap.utils.toArray(".content");
-content.forEach((content, i) => {
+const page = gsap.utils.toArray(".page");
+
+page.forEach((page, i) => {
   ScrollTrigger.create({
     start: 0,
     end: (i + 1) * innerHeight - innerHeight / 2,
@@ -46,34 +27,49 @@ content.forEach((content, i) => {
     onLeave: () => {
     if(navLinks[i + 1]) {
         gsap.to(navLinks[i + 1], {transformOrigin:"right", scale: 2, color: "white"});
-        gsap.to(navLinks[i], {scale: 1, color: "#203538"});
+        gsap.to(navLinks[i], {scale: 1, color: "#355f66"});
     }
     }, 
     onEnterBack: () => {
     gsap.to(navLinks[i], {transformOrigin:"right", scale: 2, color: "white"});
     if(navLinks[i + 1]) {
-        gsap.to(navLinks[i + 1], {scale: 1, color: "#203538"});
-    }
-    }, 
-})
+        gsap.to(navLinks[i + 1], {scale: 1, color: "#355f66"});
+      }
+    },
+  })
 });
 
 // -------------------------------- Intro / Map -------------------------------- //
-
-
-
-gsap.to(".worldmap path", 1, {
+gsap.to(".worldmap path", 1,{
   fill: "#013c584d",
   stagger: {
-    each: .1,
+    each: 0.1,
     ease: "power2",
     from:".China"},
     scrollTrigger: {
       trigger:".intro",
-      start:"top 100%",
-      markers:true,
-      toggleActions: "play none none reverse"}
+      start:"top center",
+      markers: false}
 })
+
+// --------- letter animation --------- // 
+
+
+gsap.fromTo('#cursor', {
+  autoAlpha: 0,
+  x:-10},{
+  autoAlpha: 1, duration: 1, repeat: -1, ease: SteppedEase.config(1)
+});
+
+let tween = gsap.to("#text", {
+  text: {
+    value: "The virus has thrown off the choreography of moving cargo from one continent to another. Americans stuck in their homes have set off a surge of orders from factories in China, much of it carried across the Pacific in containers — the metal boxes that move goods in towering stacks atop enormous vessels. As households in the United States have filled bedrooms with office furniture and basements with treadmills, the demand for shipping has outstripped the availability of containers in Asia, yielding shortages there just as the boxes pile up at American ports."
+  },
+  duration: 120,
+  delay: 1,
+  ease: "slow"});
+
+
 
 
 // -------------------------------- Port -------------------------------- //
