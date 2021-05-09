@@ -170,11 +170,27 @@ h2 .ship { font-weight:700;}
     stroke: #203538;
 }
 
+/*-------------------------- TABLE ---------------------------*/
 
+#heatmap{
+    background-color: #1da9cc;
+    width: 100%;
+    height: 100vh;
+}
 
-  
+.axis path, .axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
 
-/*-----------------------------------------------------------*/
+.area {
+    fill: #F0F8FF;
+    stroke-width: 0;
+}
+
+/*--------------------------- PORT --------------------------*/
 
 
 .Port {

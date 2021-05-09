@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro&family=Poppins:ital,wght@0,100;0,200;0,400;0,600;0,800;0,900;1,100&family=Syne:wght@400;600&display=swap" rel="stylesheet">
     <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js'></script>
+
 </head>
 
 <body>
@@ -510,19 +511,25 @@
         </section>
 
         <section id="#section2" class="page">
+            <div id="heatmap"></div>
+                <div class="tooltip"></div>
+        </section>
+
+        <section id="#section3" class="page">
             <div class="content Port">
                 <div class="row justify-content-around">
                     <div id="a1" class="column-3"></div>
                     <div id="a2" class="column-3"></div>
                     <div id="a3" class="column-3"></div>
                     <div id="a4" class="column-3"></div>
+                    <div id="a5" class="column-3"></div>
                 </div>
                 <video muted loop autoplay> <source src="/static/videos/mixkit-cargo-ship-port-seen-from-above-36264-medium.mp4"></video>
                 <header><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sint, architecto aliquid ea, quaerat in accusamus cum amet sit eaque eius commodi ab voluptatibus, magnam nihil voluptas iure atque velit autem.</p></header>
             </div>
         </section>
 
-        <section id="#section3" class="page">
+        <section id="#section4" class="page">
             <div class="content consumption">
                 <header>
                     <h1>end</h1>
@@ -535,10 +542,15 @@
             <ul>
             <li><a class="active" href="#section0">Intro</a></li>
             <li><a href="#section1">Covid</a></li>
-            <li><a href="#section2">Port Dillema</a></li>
-            <li><a href="#section3">US Consumption</a></li>
+            <li><a href="#section2">Heatmap</a></li>
+            <li><a href="#section3"></a></li>
+            <li><a href="#section4">US Consumption</a></li>
             </ul>
         </div>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://d3js.org/d3-color.v2.min.js"></script>
+        <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v2.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/TextPlugin.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollToPlugin.js"></script>
