@@ -170,276 +170,286 @@ return {
 
 
 
-var dx = 12
-var dy = 120
-var tree = d3.tree().nodeSize([dx, dy])
-var treeLink = d3.linkHorizontal().x(d => d.y).y(d => d.x)
+// var dx = 12
+// var dy = 120
+// var tree = d3.tree().nodeSize([dx, dy])
+// var treeLink = d3.linkHorizontal().x(d => d.y).y(d => d.x)
 
 
 
 
-function graph(root, {
-  label = d => d.data.id, 
-  highlight = () => false,
-  marginLeft = 40
-} = {}) {
-  root = tree(root);
+// function graph(root, {
+//   label = d => d.data.id, 
+//   highlight = () => false,
+//   marginLeft = 40
+// } = {}) {
+//   root = tree(root);
 
-  let x0 = Infinity;
-  let x1 = -x0;
-  root.each(d => {
-    if (d.x > x1) x1 = d.x;
-    if (d.x < x0) x0 = d.x;
-  });
-
-
+//   let x0 = Infinity;
+//   let x1 = -x0;
+//   root.each(d => {
+//     if (d.x > x1) x1 = d.x;
+//     if (d.x < x0) x0 = d.x;
+//   });
 
 
-  const svg = d3.select("#treecanvas")
-      .attr("viewBox", [0, 00, width, x1 - x0 + dx * 2])
-      // .attr("width", width)
-      // .attr("height", height)
-      .style("overflow", "visible");
+
+
+//   const svg = d3.select("#treecanvas")
+//       .attr("viewBox", [0, 00, width, x1 - x0 + dx * 2])
+//       // .attr("width", width)
+//       // .attr("height", height)
+//       .style("overflow", "visible");
   
-  const g = svg.append("g")
-      .attr("font-family", "sans-serif")
-      .attr("font-size", 10)
-      .attr("transform", `translate(${marginLeft},${dx - x0})`);
+//   const g = svg.append("g")
+//       .attr("font-family", "sans-serif")
+//       .attr("font-size", 10)
+//       .attr("transform", `translate(${marginLeft},${dx - x0})`);
     
-  const link = g.append("g")
-    .attr("fill", "none")
-    .attr("stroke", "#555")
-    .attr("stroke-opacity", 0.4)
-    .attr("stroke-width", 1.5)
-  .selectAll("path")
-    .data(root.links())
-    .join("path")
-      .attr("stroke", d => highlight(d.source) && highlight(d.target) ? "red" : null)
-      .attr("stroke-opacity", d => highlight(d.source) && highlight(d.target) ? 1 : null)
-      .attr("d", treeLink);
+//   const link = g.append("g")
+//     .attr("fill", "none")
+//     .attr("stroke", "#555")
+//     .attr("stroke-opacity", 0.4)
+//     .attr("stroke-width", 1.5)
+//   .selectAll("path")
+//     .data(root.links())
+//     .join("path")
+//       .attr("stroke", d => highlight(d.source) && highlight(d.target) ? "red" : null)
+//       .attr("stroke-opacity", d => highlight(d.source) && highlight(d.target) ? 1 : null)
+//       .attr("d", treeLink);
   
-  const node = g.append("g")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-width", 3)
-    .selectAll("g")
-    .data(root.descendants())
-    .join("g")
-      .attr("transform", d => `translate(${d.y},${d.x})`);
+//   const node = g.append("g")
+//       .attr("stroke-linejoin", "round")
+//       .attr("stroke-width", 3)
+//     .selectAll("g")
+//     .data(root.descendants())
+//     .join("g")
+//       .attr("transform", d => `translate(${d.y},${d.x})`);
 
-  node.append("circle")
-      .attr("fill", d => highlight(d) ? "red" : d.children ? "#555" : "#999")
-      .attr("r", 2.5);
+//   node.append("circle")
+//       .attr("fill", d => highlight(d) ? "red" : d.children ? "#555" : "#999")
+//       .attr("r", 2.5);
 
-  node.append("text")
-      .attr("fill", d => highlight(d) ? "red" : null)
-      .attr("dy", "0.31em")
-      .attr("x", d => d.children ? -6 : 6)
-      .attr("text-anchor", d => d.children ? "end" : "start")
-      .text(label)
-    .clone(true).lower()
-      .attr("stroke", "white");
+//   node.append("text")
+//       .attr("fill", d => highlight(d) ? "red" : null)
+//       .attr("dy", "0.31em")
+//       .attr("x", d => d.children ? -6 : 6)
+//       .attr("text-anchor", d => d.children ? "end" : "start")
+//       .text(label)
+//     .clone(true).lower()
+//       .attr("stroke", "white");
   
-  return svg.node();
-}
+//   return svg.node();
+// }
 
 
 
 
 
 /*--------------------------------------------------------------- TREE MAP ------------------------------------------------------------------------*/
-
-const tree_url = '/static/data/endusedata.csv'
+const tree_url = '/static/data/endusedatatest.json'
 let req = new XMLHttpRequest()
-let color = d3.scaleOrdinal(d3.schemeCategory10)
+let color = d3.scaleSequential([8, 0], d3.interpolateMagma)
+let format = d3.format(",d")
 
-const text = "A bad excuse is better than none."
+/*----------------------------------------------------*/
 
-let treedata = d3.text(tree_url).then(function(data){
 
-  parsed = d3.hierarchy(
-    data,
-    id => {
-      for (const split of [/[^\w\s]/, /\s/]) {
-        const children = id && id.split(split).filter(id => id.length > 0);
-        if (children.length > 1) return children;
-      }
-    }
-  )
+let treedata = d3.json('/static/data/endusedata.json').then(function(data) {
+  
+  
+  let treemap = data => d3.treemap()
+  .size([width, height])
+  .paddingOuter(3)
+  .paddingTop(19)
+  .paddingInner(1)
+  .round(true)
+(d3.hierarchy(data)
+    .sum(d => d.value)
+    .sort((a, b) => b.value - a.value))
 
-return  graph(parsed, {marginLeft: 200, label: d => d.data})
+    const root = treemap(data);
 
+    const svg = d3.select("#treecanvas")
+        .attr("viewBox", [0, 0, width, height])
+        .style("font", "10px sans-serif");
+  
+    const shadow = d3.selectAll("shadow");
+  
+    svg.append("filter")
+        .attr("id", shadow.id)
+      .append("feDropShadow")
+        .attr("flood-opacity", 0.3)
+        .attr("dx", 0)
+        .attr("stdDeviation", 3);
+  
+    const node = svg.selectAll("g")
+      .data(d3.group(root, d => d.height))
+      .join("g")
+        .attr("filter", shadow)
+      .selectAll("g")
+      .data(d => d[1])
+      .join("g")
+        .attr("transform", d => `translate(${d.x0},${d.y0})`);
+  
+    node.append("title")
+        .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${format(d.value)}`);
+  
+    node.append("rect")
+        .attr("id", d => (d.nodeUid =  d3.selectAll("node")).id)
+        .attr("fill", d => color(d.height))
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0);
+  
+    node.append("clipPath")
+        .attr("id", d => (d.clipUid =  d3.selectAll("clip")).id)
+      .append("use")
+        .attr("xlink:href", d => d.nodeUid.href);
+  
+    node.append("text")
+        .attr("clip-path", d => d.clipUid)
+      .selectAll("tspan")
+      .data(d => d.data.name.split(/(?=[A-Z][^A-Z])/g).concat(format(d.value)))
+      .join("tspan")
+        .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
+        .text(d => d);
+  
+    node.filter(d => d.children).selectAll("tspan")
+        .attr("dx", 3)
+        .attr("y", 13);
+  
+    node.filter(d => !d.children).selectAll("tspan")
+        .attr("x", 3)
+        .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`);
+  
+    return svg.node();
 })
 
+console.log(treedata)
+
+// const tree_url = '/static/data/endusedatatest.json'
+// let req = new XMLHttpRequest()
+// let treecolor = d3.scaleOrdinal( d3.schemePaired  )
+// let margin ={top: 10, bottom: 10, right: 10, left: 10}
 
 
 
 
+// /*----------------------------------------------------*/
+
+//   const svg = d3.select('#treecanvas')
+//   .style('font-family', 'sans-serif')
+//   .attr('width', width)
+//   .attr('height', height)
+
+
+// let treedata = d3.json('/static/data/endusedata.json').then(function(data) {
+
+//   var hierarchy = d3.hierarchy(data)
+//   .sum(function(d) { return d.value; })
+//   .sort(function(a, b) { return b.depth - a.depth || b.value - a.value; })
+//   .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
+
+
+//   let treemap = d3.treemap()
+//   .tile(d3.treemapBinary)
+//   .size([ width, height ])
+//   .padding(1)
+//   .paddingTop(1)
+//   .round(true)
+
+//   var root = treemap(hierarchy)
+    
 
 
 
-//Create SVG element
-// var svg = d3.select("#treemap")
-// .append("svg")
-// .attr("width", 600)
-// .attr("height", 600);
+// //  for (const descendant of root) {
+// //     console.log(descendant);
+// //   }
+ 
 
 
-// let arraytree = []
+//   const g = svg.append('g')
+//       .attr('class', 'treemap-container')
+
+//   const leaf = g.selectAll('g.leaf')
+//     // root.leaves() returns all of the leaf nodes
+//     .data(root.leaves())
+//     .join('g')
+//       .attr('class', 'leaf')
+//       // position each group at the top left corner of the rect
+//       .attr('transform', d => `translate(${ d.x0 },${ d.y0 })`)
 
 
-// let treedata = d3.text(tree_url).then(function(data){
+//   leaf.append('title')
+//       .text(d => `${ d.parent.data.name }-${ d.data.name }\n${ d.value}`)
 
-//   treedata2 = d3.csvParse(data, function(d){
-//   // d.forEach(item => arraytree.push(item))
-  // return {
-  //   ENDUSE: d.ENDUSE,
-  //   District: d.District,
-  //   treeWeight: d.Weight,
-  //   value: d.Value,
-  //   item_count: d.Item_Count,
-  //   treeDate: d.Date};})
+//     // Now we append the rects. Nothing crazy here
+//   leaf.append('rect')
+//       .attr('id', 'tree-rect')
+//       .attr("fill", d => { while (d.depth > 1) d = d.parent; return treecolor(d.data.name); })
+//       .attr('opacity', 0.7)
+//       // the width is the right edge position - the left edge position
+//       .attr('width', d => d.x1 - d.x0)
+//       // same for height, but bottom - top
+//       .attr('height', d => d.y1 - d.y0)
+//       // make corners rounded
+//       // .attr('rx', 3)
+//       // .attr('ry', 3)
 
-    // reduceFn = treedata2 => d3.sum(treedata2, d => d['value'] + d['item_count'] + d['treeWeight']);
-    // groupingFns = [d => d.treeDate, d => d.ENDUSE, d => d.District]
-    // rollupData = d3.rollup(treedata2, reduceFn, ...groupingFns)
-
-    // groupmap = d3.group(treedata2, d=>new Date(d.treeDate), d=>d.ENDUSE, d=>d.District)
-    // valuesum = d3.sum(treedata2, d=>d.value + d.item_count + d.treeWeight)
-    // // finalmap = Array.from(treedata2map,
-    // //   ([key,value])=>({key, value:value[0].item_count}))
-
-    // finalmap = d3.rollup(treedata2, valuesum, groupmap)
-
-    // testmap = d3.group(trdata, d=>d.treeDate, d=>d.ENDUSE, d=>d.District)
-    // itemsum = d3.rollup(treedata2, v=> d3.sum(v, d=> d.item_count), d=>d.treeDate, d=>d.ENDUSE, d=>d.District)
-    // weightsum = d3.rollups(treedata2, v=> d3.sum(v, d=> d.treeWeight), d=>d.treeDate, d=>d.ENDUSE, d=>d.District)
-    // valuesum = d3.rollups(treedata2, v=> d3.sum(v, d=> d.value), d=>d.treeDate, d=>d.ENDUSE, d=>d.District)
-    // testmap = new Map(d3.transpose(valuesum,itemsum))
-
-  //   ttt = new Map(treedata2)
+    
 
 
-  // function makeHierarchy(config) {
-  //   const defaultConfig = {
-  //     childrenAccessorFn: ([key, value]) => value.size && Array.from(value),
-  //     sumFn: ([key, value]) => value,
-  //     sortFn: (a, b) => b.value - a.value,
-  //   };
-  //   const { 
-  //     data,
-  //     reduceFn,
-  //     groupByFns,
-  //     childrenAccessorFn,
-  //     sumFn,
-  //     sortFn
-  //   } = { ...defaultConfig, ...config };
-  //   const rollupData = d3.rollup(data, reduceFn, ...groupByFns);
-  //   const hierarchyData = d3.hierarchy([null, rollupData], childrenAccessorFn)
-  //   .sum(sumFn)
-  //   .sort(sortFn);
-  //   return hierarchyData;
-  //  }
+//   // This next section checks the width and height of each rectangle
+//   // If it's big enough, it places labels. If not, it doesn't.
+//   leaf.each((d, i, arr) => {
   
-  //  makeHierarchy({
-  //   data: treedata2,
-  //   groupByFns: [d => d.treeDate, d => d.ENDUSE, d => d.District],
-  //   reduceFn: v => d3.sum(v, d =>d['value'] + d['item_count'] + d['treeWeight'])
-  //  });
+//     // The current leaf element
+//     const current = arr[i]
+    
+//     const left = d.x0,
+//           right = d.x1,
+//           // calculate its width from the data
+//           width = right - left,
+//           top = d.y0,
+//           bottom = d.y1,
+//           // calculate its height from the data
+//           height = d.y1 - d.y0
+
+//     // too small to show text
+//     const tooSmall = width < 34 || height < 25
+    
+//     // and append the text (you saw something similar with the pie chart (day 6)
+//     const text = d3.select( current ).append('text')
+//         // If it's too small, don't show the text
+//         .attr('opacity', tooSmall ? 0 : 0.9)
+//       .selectAll('tspan')
+//       .data(d => [ d.data.name, d.value.toLocaleString() ])
+//       .join('tspan')
+//         .attr('x', 3)
+//         .attr('y', (d,i) => i ? '.5em' : '.15em')
+//         .text(d => d)
+//   })
 
 
 
-  // });
-  // console.log(treedata)
-
-
-
-  // var root = d3.stratify()
-  // .id(function(d){ return d.item_count})
-  // .id(function(d){ return d.value})
-  // .id(function(d){ return d.treeWeight})
-  // .parentId(function(d){return d.District})
-  // .parentId(function(d){return d.ENDUSE})
-  // .parentId(function(d){return d.treeDate})
-  // (treedata)
-
-// const jsontree = d3.json('/static/data/endusedata.json').then(function(data){return data})
-
-
-
-// console.log(jsontree)
-
-// const root = d3.hierarchy({
-//   data: treedata,
-//   name: 'endusedata',
-//   parent:
-//     {name: treedata.Date,
-//     children: [
-//       {name: treedata.ENDUSE,
-//         children: [
-//         {name: 'District',
-//           children: [
-//             {name: 'treeWeight'},
-//             {name: 'Value'},
-//             {name: 'Item_Count'}]
-//           }
-//         ]
-//       }
-//     ]
-//   }
+//   return(root)
+//   // return svg.node()
 // })
 
+// console.log(treedata)
 
+/*----------------------------------------------------*/
 
-//   console.log(root)
-
-// root.sum(function(d) { return d.value ? 1 : 0; });
-
-// var treemap = d3.treemap()
-//     .size([width, height])
-//     .padding(2);
-
-// var nodes = treemap(root
-//     .sum(function(d) { return d.value; })
-//     .sort(function(a, b) { return b.height - a.height || b.value - a.value; }))
-//   .descendants();
-
-// console.log(root)
-
-// const treecanvas = d3.select('#treemap')
-//     .selectAll('svg')
-//       .attr('width', width)
-//       .attr('height', height)
-//     .selectAll('g')
-//     .data(root.leaves())
-//     .append('g')
-//     .attr("transform", d=> "translate(" + d.x0 + ", " + d.y0 + ")");
-
-
-//     treecanvas.append("title")
-//     .text(d => {d.ancestors().reverse().map(d => d.data)});
-
-//     treecanvas.append("rect")
-//     // .attr("id", d => (d.leafUid = DOM.uid("leaf")).id)
-//     .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.name); })
-//     .attr("fill-opacity", 0.6)
-//     .attr("width", d => d.x1 - d.x0)
-//     .attr("height", d => d.y1 - d.y0);
-
-//     treecanvas.append("clipPath")
-//     .attr("id", d => (d.clipUid = DOM.uid("clip")).id)
-//   .append("use")
-//     .attr("xlink:href", d => d.leafUid.href);
-
-//     treecanvas.append("text")
-//     .attr("clip-path", d => d.clipUid)
-//   .selectAll("tspan")
-//   .data(d => d.data.name.split(/(?=[A-Z][a-z])|\s+/g).concat(format(d.value)))
-//   .join("tspan")
-//     .attr("x", 3)
-//     .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
-//     .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
-//     .text(d => d);
-
-
-
+  function splitter(string){ 
+    text = string.split(/(d)/).slice(0,1)
+    return text
+  }
+  
+  function fixCallback(callback) {
+    return function(error, xhr) {
+      callback(error == null ? xhr : null);
+    };
+  }
+  
   
