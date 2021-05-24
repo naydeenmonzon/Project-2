@@ -2,245 +2,238 @@
 const width = 1400
 const height = 700
 const padding = 70
+let swatch1 = d3.quantize(d3.interpolateHcl("#180000", "#2976b4bb"), 10)
+let swatch2 = d3.quantize(d3.interpolateHcl("#2e0300", "#66d1a438"), 20)
+let swatch3 = d3.quantize(d3.interpolateHcl('#addde4b6','#addde4b6'), 20)
+let color = d3.scaleOrdinal(swatch1) // tree
+let color2 = d3.scaleOrdinal(swatch3) //tree
+let color3 = d3.scaleOrdinal(swatch2)
+let format = d3.format(" ,d")
 
 
-// -------------------------------- HEATMAP TABLE -------------------------------- //
-
-let url = '/static/data/cityportTEU.csv'
-// let req = new XMLHttpRequest()
-var colorSchema = new Array(3).concat(
-  "e0ecf49ebcda8856a7",
-  "edf8fbb3cde38c96c688419d",
-  "edf8fbb3cde38c96c68856a7810f7c",
-  "edf8fbbfd3e69ebcda8c96c68856a7810f7c",
-  "edf8fbbfd3e69ebcda8c96c68c6bb188419d6e016b",
-  "f7fcfde0ecf4bfd3e69ebcda8c96c68c6bb188419d6e016b",
-  "f7fcfde0ecf4bfd3e69ebcda8c96c68c6bb188419d810f7c4d004b"
-)
-
-let xScale
-let yScale
-let TEUmap
-let port = []
-let datelist = []
-let startDate
-let endDate
-let domdate
-let monthDelta
-
-let colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+// -------------------------------- STACKBAR TABLE -------------------------------- //
+let bubble_url = '/static/data/cityportTEU2.json'
+let formatBubble = d3.format(",d")
+const circWidth = 1600
+const circHeight = 800
 
 
+let colorBubble = d3.scaleLinear()
+    .domain([0, 5])
+    .range(["hsl(184, 100%, 8%)", "hsl(20, 9%, 100%)"])
+    .interpolate(d3.interpolateHcl)
 
-let canvas = d3.select('#canvas')
-canvas.attr('width', width)
-canvas.attr('height', height)
-canvas.selectAll('g')
+let dataBubble = d3.json(bubble_url).then(function(data) {   
+    pack = data => d3.pack()
+    .size([circWidth, circHeight])
+    .padding(3)
+  (d3.hierarchy(data)
+    .sum(d => d.value)
+    .sort((a, b) => b.value - a.value))
 
-
-
-let generateScales = () => {
-
-  xScale = d3.scaleBand()
-  .domain(d3.range(151))
-  .range([padding, width-padding])
+    const root = pack(data);
+    let focus = root;
+    let view;
   
-
-  yScale = d3.scaleTime()
-  .range([padding, height-padding])
-  .domain([endDate, startDate])
-
-
-
-  // xScale = d3.scaleLinear()
-  //     .range([colorSchema[0], colorSchema[colorSchema.length - 1]])
-  //     .domain(d3.extent(port, function (d) { return d[2] }))
-  //     .interpolate(d3.interpolateHcl);
-
-}
-
-
-let drawCells = () => {
-
-  canvas.selectAll('rect')
-  .data(TEUmap)
-  .enter()
-  .append('rect')
-  .attr('class', 'cell')
-  .attr('fill', function(d) { return colorScale(d)})
-  .attr('data-Port',function(d){return (d[0])})
-  .attr('height',(height)/(monthDelta*1.5))
-  .attr('y', function(d) {return yScale(d)})
-  .attr('width',function(d) {return (width) /((d.length)*padding)})
-  .attr('x', function(d) { return xScale(d)})
-  .attr("transform", "translate(" + padding + ", " + padding + ")")
-  .classed('rect', true)
-}
-
-
-let drawAxes = () => {
-
-  let xAxis = d3.axisBottom(xScale)
-  // .tickValues(tport)
-
-                  
-  let yAxis = d3.axisLeft(yScale)
-  .ticks(d3.timeMonth.every(1))
-
-
-  canvas.append('g')
-  .call(xAxis)
-  .attr('id', 'x-axis')
-  .attr("transform", "translate(" + 0 + ", " + (height-padding) + ")")
-  .selectAll('text')
-    .style("text-anchor",'middle')
-      .attr("dx",".8em")
-      .attr('transform', "rotate(-90)")
-      
-
-  canvas.append('g')
-  .call(yAxis)
-  .attr('id', 'y-axis')
-  .attr("transform", "translate(" + padding + ", " + 0 + ")")
+    const svg = d3.select("#bubblecanvas")
+        .attr("viewBox", `-${circWidth / 2} -${circHeight / 2} ${circWidth} ${circHeight}`)
+        .style("margin-right", "10%")
+        .style('margin-top', '4.2%')
+        .style("cursor", "pointer")
+        .on("click", (event) => zoom(event, root));
   
+    const node = svg.append("g")
+      .selectAll("circle")
+      .data(root.descendants().slice(1))
+      .join("circle")
+        .attr("fill", d => d.children ? colorBubble(d.depth) : "#3b2730")
+        .attr("pointer-events", d => !d.children ? "none" : null)
+        .on("mouseover", function() { d3.select(this).attr("stroke", "grey" ); })
+        .on("mouseout", function() { d3.select(this).attr("stroke", null); })
+        .on("click", (event, d) => focus !== d && (zoom(event, d), event.stopPropagation()));
   
-}
-
-
-
-
-
-
-
-let heatmapdata = d3.text(url).then(function(data){
+    const label = svg.append("g")
+        .style("font-family", "'Poppins', sans-serif")
+        .style("font-weight", "400")
+        .style("fill", 'white')
+        .style("font-size", '1em')
+        .attr("pointer-events", "none")
+        .attr("text-anchor", "middle")
+      .selectAll("text")
+      .data(root.descendants())
+      .join("text")
+        .style("fill-opacity", d => d.parent === root ? 1 : 0)
+        .style("display", d => d.parent === root ? "inline" : "none")
+        .text(d => d.data.name);
   
-  hmdata = d3.csvParse(data, d3.autoType)
-  hmdata.forEach(d=> port.push(d.Port))
-  hmdata.forEach(d=> datelist.push(new Date(d.Date)))
-
-  obj = d3.rollups(hmdata, v=> d3.sum(v, d=> d.TEU), d=>d.Date, d=>d.Port);
-
-
-  function nest(rollup) {
-    return Array.from(rollup, ([key, value]) =>
-      value instanceof Map
-        ? { name: key, children: nest(value) }
-        : { name: key, value: value });
-      };
-  TEUnest = nest(obj)
-  TEUcol = []
-  TEUnest.forEach (element => (TEUcol.push(element.value)))
-  TEUArray = TEUcol.flatMap(d=>Array.from(d))
+    zoomTo([root.x, root.y, root.r * 2]);
   
+    function zoomTo(v) {
+      const k = circWidth / v[2];
   
-  TEUmap = new Map(d3.sort(TEUArray))
-  domdate = d3.extent(datelist)
-  startDate = domdate[0]
-  endDate = domdate[1]
+      view = v;
+  
+      label.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+      node.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+      node.attr("r", d => d.r * k);
+    }
+  
+    function zoom(event, d) {
+      const focus0 = focus;
+  
+      focus = d;
+  
+      const transition = svg.transition()
+          .duration(event.altKey ? 7500 : 750)
+          .tween("zoom", d => {
+            const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+            return t => zoomTo(i(t));
+          });
+  
+      label
+        .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+        .transition(transition)
+          .style("fill-opacity", d => d.parent === focus ? 1 : 0)
+          .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+          .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+    }
+  
+    return svg.node();
 
-  tvalue = d3.transpose(Array.from(TEUmap))
-  tport = tvalue.reverse().slice(1)
-  monthDelta = d3.timeMonth.count(startDate, endDate)
 
-generateScales()
-drawCells()
-drawAxes()
-
-return {
-  TEUmap:TEUmap,
-  tvalue:tvalue,
-  tport:tport,
-  portCount: tport[0].length,
-  domdate:domdate,
-  startDate:startDate,
-  endDate:endDate,
-  monthDelta:monthDelta};
 })
 
-// console.log(heatmapdata)
+
+// -------------------------------- STACKBAR TABLE -------------------------------- //
+
+// let bar_url = '/static/data/pivotcityportTEU.csv'
+// let outerRadius = Math.min(width, height) * 0.67
+// let innerRadius = 180
 
 
+// const bardata = d3.dsv(',',bar_url, function(d, i, columns, autoType){
+//   let total = 0;
+//   for (let i = 1; i < columns.length; ++i) total += d[columns[i]] = +d[columns[i]];
+//   d.total = total;
+//   return d
+// }).then(function(d, i, columns){
 
-
-
-
-
-
-/*--------------------------------------------------------------- TREE MAP ------------------------------------------------------------------------*/
-
-
-
-// var dx = 12
-// var dy = 120
-// var tree = d3.tree().nodeSize([dx, dy])
-// var treeLink = d3.linkHorizontal().x(d => d.y).y(d => d.x)
-
-
-
-
-// function graph(root, {
-//   label = d => d.data.id, 
-//   highlight = () => false,
-//   marginLeft = 40
-// } = {}) {
-//   root = tree(root);
-
-//   let x0 = Infinity;
-//   let x1 = -x0;
-//   root.each(d => {
-//     if (d.x > x1) x1 = d.x;
-//     if (d.x < x0) x0 = d.x;
-//   });
-
-
-
-
-//   const svg = d3.select("#treecanvas")
-//       .attr("viewBox", [0, 00, width, x1 - x0 + dx * 2])
-//       // .attr("width", width)
-//       // .attr("height", height)
-//       .style("overflow", "visible");
+//   newData = d.sort((a, b) => b.total - a.total)
+//   console.log(newData)
   
-//   const g = svg.append("g")
-//       .attr("font-family", "sans-serif")
-//       .attr("font-size", 10)
-//       .attr("transform", `translate(${marginLeft},${dx - x0})`);
-    
-//   const link = g.append("g")
-//     .attr("fill", "none")
-//     .attr("stroke", "#555")
-//     .attr("stroke-opacity", 0.4)
-//     .attr("stroke-width", 1.5)
-//   .selectAll("path")
-//     .data(root.links())
-//     .join("path")
-//       .attr("stroke", d => highlight(d.source) && highlight(d.target) ? "red" : null)
-//       .attr("stroke-opacity", d => highlight(d.source) && highlight(d.target) ? 1 : null)
-//       .attr("d", treeLink);
-  
-//   const node = g.append("g")
-//       .attr("stroke-linejoin", "round")
-//       .attr("stroke-width", 3)
-//     .selectAll("g")
-//     .data(root.descendants())
+//   let cl = newData.columns.length
+
+
+// const arc = d3.arc()
+//   .innerRadius(newData => y(newData[0]))
+//   .outerRadius(newData => y(newData[1]))
+//   .startAngle(newData => x(newData.Port))
+//   .endAngle(newData => x(newData.Port) + x.bandwidth())
+//   .padAngle(0.01)
+//   .padRadius(innerRadius);
+
+// const x = d3.scaleBand()
+//   .domain(newData.map(d => newData.Port))
+//   .range([0, 2 * Math.PI])
+//   .align(0)
+
+// const y = d3.scaleRadial()
+//   .domain([0, d3.max(newData, newData => newData.total)])
+//   .range([innerRadius, outerRadius])
+
+// const z = d3.scaleOrdinal()
+//   .domain(newData.columns.slice(1))
+//   .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
+
+
+// const xAxis = g => g
+//   .attr("text-anchor", "middle")
+//   .call(g => g.selectAll("g")
+//     .data(newData)
+//     .enter().append("g")
+//       .attr("transform", d => `
+//         rotate(${((x(newData.Port) + x.bandwidth() / 2) * 180 / Math.PI - 90)})
+//         translate(${innerRadius},0)
+//       `)
+//       .call(g => g.append("line")
+//           .attr("x2", -5)
+//           .attr("stroke", "#000"))
+//       .call(g => g.append("text")
+//           .attr("transform", d => (x(newData.Port) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
+//               ? "rotate(90) translate(0,16)"
+//               : "rotate(-90) translate(0,-9)")
+//           .text(newData => newData.Port)))
+
+// const yAxis = g => g
+//   .attr("text-anchor", "end")
+//   .call(g => g.append("text")
+//       .attr("x", -6)
+//       .attr("y", d => -y(y.ticks(10).pop()))
+//       .attr("dy", "-1em")
+//       .text("Population"))
+//   .call(g => g.selectAll("g")
+//     .data(y.ticks(10).slice(1))
 //     .join("g")
-//       .attr("transform", d => `translate(${d.y},${d.x})`);
+//       .attr("fill", "none")
+//       .call(g => g.append("circle")
+//           .attr("stroke", "#000")
+//           .attr("stroke-opacity", 0.5)
+//           .attr("r", y))
+//       .call(g => g.append("text")
+//           .attr("x", -6)
+//           .attr("y", newData => -y(newData))
+//           .attr("dy", "0.35em")
+//           .attr("stroke", "#fff")
+//           .attr("stroke-width", 5)
+//           .text(y.tickFormat(10, "s"))
+//         .clone(true)
+//           .attr("fill", "#000")
+//           .attr("stroke", "none")));
 
-//   node.append("circle")
-//       .attr("fill", d => highlight(d) ? "red" : d.children ? "#555" : "#999")
-//       .attr("r", 2.5);
 
-//   node.append("text")
-//       .attr("fill", d => highlight(d) ? "red" : null)
-//       .attr("dy", "0.31em")
-//       .attr("x", d => d.children ? -6 : 6)
-//       .attr("text-anchor", d => d.children ? "end" : "start")
-//       .text(label)
-//     .clone(true).lower()
-//       .attr("stroke", "white");
+
+// const legend = g => g.append("g")
+//   .selectAll("g")
+//   .data(newData.columns.slice(1).reverse())
+//   .join("g")
+//     .attr("transform", (newData, i) => `translate(-40,${(i - (cl - 1) / 2) * 20})`)
+//     .call(g => g.append("rect")
+//         .attr("width", 18)
+//         .attr("height", 18)
+//         .attr("fill", z))
+//     .call(g => g.append("text")
+//         .attr("x", 24)
+//         .attr("y", 9)
+//         .attr("dy", "0.35em")
+//         .text(newData => newData));
+
+//   svg = d3.select('#chartcanvas')
+//           .attr("viewBox", `${-width / 2} ${-height * 0.69} ${width} ${height}`)
+//           .style("width", "100%")
+//           .style("height", "auto")
+//           .style("font", "10px sans-serif");
   
-//   return svg.node();
-// }
+//     svg.append("g")
+//       .selectAll("g")
+//       .data(d3.stack().keys(newData.columns.slice(1))(newData))
+//       .join("g")
+//         .attr("fill", newData => z(newData.key))
+//       .selectAll("path")
+//       .data(newData => newData)
+//       .join("path")
+//         .attr("d", arc);
+  
+//     svg.append("g")
+//         .call(xAxis);
+  
+//     svg.append("g")
+//         .call(yAxis);
+  
+//     svg.append("g")
+//         .call(legend);
+  
+//     return svg.node();
+// })
 
 
 
@@ -248,198 +241,168 @@ return {
 
 /*--------------------------------------------------------------- TREE MAP ------------------------------------------------------------------------*/
 const tree_url = '/static/data/endusedatatest.json'
-let req = new XMLHttpRequest()
-let color = d3.scaleSequential([8, 0], d3.interpolateMagma)
-let format = d3.format(",d")
 
+
+function tile(node, x0, y0, x1, y1) {
+  d3.treemapSquarify(node, 0, 0, treeWidth, treeHeight);
+  for (const child of node.children) {
+    child.x0 = x0 + child.x0 / treeWidth * (x1 - x0);
+    child.x1 = x0 + child.x1 / treeWidth * (x1 - x0);
+    child.y0 = y0 + child.y0 / treeHeight * (y1 - y0);
+    child.y1 = y0 + child.y1 / treeHeight * (y1 - y0);
+  }
+}
 /*----------------------------------------------------*/
 
+const treeWidth = 1600
+const treeHeight = 800
 
-let treedata = d3.json('/static/data/endusedata.json').then(function(data) {
+let treedata = d3.json('/static/data/endusedata2.json').then(function(data) {
+  var name = d => d.ancestors().reverse().map(d => d.data.name).join("/")
   
   
-  let treemap = data => d3.treemap()
-  .size([width, height])
-  .paddingOuter(3)
-  .paddingTop(19)
-  .paddingInner(1)
-  .round(true)
+  treemap = data => d3.treemap()
+  .tile(tile)
 (d3.hierarchy(data)
-    .sum(d => d.value)
-    .sort((a, b) => b.value - a.value))
+  .sum(d => d.value)
+  .sort(function(a, b) { return  a.depth - b.depth || b.value - a.value; }))
+  
+  
+// console.log(treemap(data).links().filter(d=>d))
 
-    const root = treemap(data);
+  const x = d3.scaleLinear().rangeRound([0, treeWidth]);
+  const y = d3.scaleLinear().rangeRound([0, treeHeight]);
 
-    const svg = d3.select("#treecanvas")
-        .attr("viewBox", [0, 0, width, height])
-        .style("font", "10px sans-serif");
-  
-    const shadow = d3.selectAll("shadow");
-  
-    svg.append("filter")
-        .attr("id", shadow.id)
-      .append("feDropShadow")
-        .attr("flood-opacity", 0.3)
-        .attr("dx", 0)
-        .attr("stdDeviation", 3);
-  
-    const node = svg.selectAll("g")
-      .data(d3.group(root, d => d.height))
-      .join("g")
-        .attr("filter", shadow)
+
+  const svg = d3.select("#treecanvas")
+      .attr("viewBox", [0.5, -60.5, treeWidth, treeHeight + 60])
+      .style("font", ".8em 'Poppins', sans-serif");
+
+  let group = svg.append("g")
+      .call(render, treemap(data))
+      
+
+  function render(group, root) {
+    const node = group
       .selectAll("g")
-      .data(d => d[1])
-      .join("g")
-        .attr("transform", d => `translate(${d.x0},${d.y0})`);
-  
-    node.append("title")
-        .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${format(d.value)}`);
-  
+      .data(root.children.concat(root))
+      .join("g");
+
+
+    node.filter(d => d === root ? d.parent : d.children)
+        .attr("cursor", "pointer")
+        .on("click", (event, d) => d === root ? zoomout(root) : zoomin(d));
+
     node.append("rect")
-        .attr("id", d => (d.nodeUid =  d3.selectAll("node")).id)
-        .attr("fill", d => color(d.height))
-        .attr("width", d => d.x1 - d.x0)
-        .attr("height", d => d.y1 - d.y0);
-  
+      .attr('class',d=>( d === root? name(d):d.data.name))
+      .attr("id", d => (d.leafUid = Node.ENTITY_REFERENCE_NODE))
+        .attr("fill", d => d === root ? "#transparent" : d.children ? color(d.value) : color(d.value))
+        .attr("stroke", "black")
+
     node.append("clipPath")
-        .attr("id", d => (d.clipUid =  d3.selectAll("clip")).id)
-      .append("use")
-        .attr("xlink:href", d => d.nodeUid.href);
-  
-    node.append("text")
-        .attr("clip-path", d => d.clipUid)
+        .attr("id", SVGPathElement.id)
+        .append("use")
+        .attr("xlink:href", d => d.leafUid.href)
+
+    node.filter(":not(:last-child)").append("title")
+        .text(d => `${name(d)} ${d.child} \n${format(d.value)}`)
+
+    node.filter(":not(:last-child)").append("text")
+        .attr("fill", d =>  d.children ? color2(d.value) : color2(d.value))
+        .attr("font-weight", d => d === root ? "bold" : null).attr('font-size', d => d === root ?'1.8em': '1.2em')
       .selectAll("tspan")
-      .data(d => d.data.name.split(/(?=[A-Z][^A-Z])/g).concat(format(d.value)))
+      .data(d => (d === root ? name(d) : d.data.name).split(/(?=[A-Z][^A-Z])/g).concat(format(d.value)))
       .join("tspan")
-        .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
+        .attr("x", 10)
+        .attr("y", (d, i, nodes) => `${(i === nodes.length) * 1 + 2 + i * 0.9}em`)
+        .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 1 : null)
+        .attr("font-weight", (d, i, nodes) => i === nodes.length - 1 ? "normal" : null)
         .text(d => d);
+
+
+    node.filter(":last-child").append("title")
+    .text(d => `${name(d)} ` + `${format(d.value)}`)
+
+    node.filter(":last-child").append("text")
+        .attr("fill", d =>  d.children ? color2(d.value) : color2(d.value))
+        .attr("font-weight", d => d === root ? "bold" : null).attr('font-size', d => d === root ?'1.8em': '1.2em')
+      .selectAll("tspan")
+      .data(d => (d === root ? name(d) : d.data.name).split(/(?=[A-Z][^A-Z])/g).concat(format(d.value)))
+      .join("tspan")
+        .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 1 : null)
+        .attr("font-weight", (d, i, nodes) => i === nodes.length - 1 ? "normal" : null)      
+        .filter(":first-child")
+        .attr("x", 10)
+        .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * .8 + 1.2 + i * 0.9}em`)
+        .text(d => d)
+        
+
+        node.filter(":last-child").selectAll("tspan")
+        .data(d => (d === root ? name(d) : d.data.name).split(/(?=[A-Z][^A-Z])/g).concat(format(d.value)))
+        .join("tspan")
+        .filter(":not(:first-child)")
+        .text(d => d)
+
+      
+
+    group.call(position, root);
+
+  }
+
+  function position(group, root) {
+    group.selectAll("g")
+        .attr("transform", d => d === root ? `translate(0,-60)` : `translate(${x(d.x0)},${y(d.y0)})`)
+      .select("rect")
+        .attr("width", d => d === root ? treeWidth : x(d.x1) - x(d.x0))
+        .attr("height", d => d === root ? 60 : y(d.y1) - y(d.y0));
+  }
+
+  function zoomin(d) {
+    const group0 = group.attr("pointer-events", "none");
+    const group1 = group = svg.append("g").call(render, d);
+
+    x.domain([d.x0, d.x1]);
+    y.domain([d.y0, d.y1]);
+
+    svg.transition()
+        .duration(750)
+        .call(t => group0.transition(t).remove()
+          .call(position, d.parent))
+        .call(t => group1.transition(t)
+          .attrTween("opacity", () => d3.interpolate(0, 1))
+          .call(position, d));
+  }
+
+  function zoomout(d) {
+    const group0 = group.attr("pointer-events", "none");
+    const group1 = group = svg.insert("g", "*").call(render, d.parent);
+
+    x.domain([d.parent.x0, d.parent.x1]);
+    y.domain([d.parent.y0, d.parent.y1]);
+
+    svg.transition()
+        .duration(750)
+        .call(t => group0.transition(t).remove()
+          .attrTween("opacity", () => d3.interpolate(1, 0))
+          .call(position, d))
+        .call(t => group1.transition(t)
+          .call(position, d.parent));
+  }
+ 
   
-    node.filter(d => d.children).selectAll("tspan")
-        .attr("dx", 3)
-        .attr("y", 13);
-  
-    node.filter(d => !d.children).selectAll("tspan")
-        .attr("x", 3)
-        .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`);
-  
-    return svg.node();
+  return svg.node
 })
 
 console.log(treedata)
 
-// const tree_url = '/static/data/endusedatatest.json'
-// let req = new XMLHttpRequest()
-// let treecolor = d3.scaleOrdinal( d3.schemePaired  )
-// let margin ={top: 10, bottom: 10, right: 10, left: 10}
-
-
-
-
-// /*----------------------------------------------------*/
-
-//   const svg = d3.select('#treecanvas')
-//   .style('font-family', 'sans-serif')
-//   .attr('width', width)
-//   .attr('height', height)
-
-
-// let treedata = d3.json('/static/data/endusedata.json').then(function(data) {
-
-//   var hierarchy = d3.hierarchy(data)
-//   .sum(function(d) { return d.value; })
-//   .sort(function(a, b) { return b.depth - a.depth || b.value - a.value; })
-//   .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
-
-
-//   let treemap = d3.treemap()
-//   .tile(d3.treemapBinary)
-//   .size([ width, height ])
-//   .padding(1)
-//   .paddingTop(1)
-//   .round(true)
-
-//   var root = treemap(hierarchy)
-    
-
-
-
-// //  for (const descendant of root) {
-// //     console.log(descendant);
-// //   }
- 
-
-
-//   const g = svg.append('g')
-//       .attr('class', 'treemap-container')
-
-//   const leaf = g.selectAll('g.leaf')
-//     // root.leaves() returns all of the leaf nodes
-//     .data(root.leaves())
-//     .join('g')
-//       .attr('class', 'leaf')
-//       // position each group at the top left corner of the rect
-//       .attr('transform', d => `translate(${ d.x0 },${ d.y0 })`)
-
-
-//   leaf.append('title')
-//       .text(d => `${ d.parent.data.name }-${ d.data.name }\n${ d.value}`)
-
-//     // Now we append the rects. Nothing crazy here
-//   leaf.append('rect')
-//       .attr('id', 'tree-rect')
-//       .attr("fill", d => { while (d.depth > 1) d = d.parent; return treecolor(d.data.name); })
-//       .attr('opacity', 0.7)
-//       // the width is the right edge position - the left edge position
-//       .attr('width', d => d.x1 - d.x0)
-//       // same for height, but bottom - top
-//       .attr('height', d => d.y1 - d.y0)
-//       // make corners rounded
-//       // .attr('rx', 3)
-//       // .attr('ry', 3)
-
-    
-
-
-//   // This next section checks the width and height of each rectangle
-//   // If it's big enough, it places labels. If not, it doesn't.
-//   leaf.each((d, i, arr) => {
-  
-//     // The current leaf element
-//     const current = arr[i]
-    
-//     const left = d.x0,
-//           right = d.x1,
-//           // calculate its width from the data
-//           width = right - left,
-//           top = d.y0,
-//           bottom = d.y1,
-//           // calculate its height from the data
-//           height = d.y1 - d.y0
-
-//     // too small to show text
-//     const tooSmall = width < 34 || height < 25
-    
-//     // and append the text (you saw something similar with the pie chart (day 6)
-//     const text = d3.select( current ).append('text')
-//         // If it's too small, don't show the text
-//         .attr('opacity', tooSmall ? 0 : 0.9)
-//       .selectAll('tspan')
-//       .data(d => [ d.data.name, d.value.toLocaleString() ])
-//       .join('tspan')
-//         .attr('x', 3)
-//         .attr('y', (d,i) => i ? '.5em' : '.15em')
-//         .text(d => d)
-//   })
-
-
-
-//   return(root)
-//   // return svg.node()
-// })
-
-// console.log(treedata)
 
 /*----------------------------------------------------*/
+
+var formatDate = (date) => {
+  var format = d3.timeFormat("%Y %B")
+  var formatdate = new Date(date)
+  return format(formatdate)}
+
 
   function splitter(string){ 
     text = string.split(/(d)/).slice(0,1)
@@ -451,5 +414,4 @@ console.log(treedata)
       callback(error == null ? xhr : null);
     };
   }
-  
   

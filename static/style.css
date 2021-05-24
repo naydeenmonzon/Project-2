@@ -47,9 +47,15 @@ html, body {
     display:block;
     width: 100%;
     height: 100vh;
+
 }
 
+.page.empty{
+    display: block;
+    height: 400px;
+    width: 50%;
 
+}
 /*-----------------------------------------------------------*/
 
 
@@ -163,7 +169,7 @@ h2 .ship { font-weight:700;}
     padding-right: 10%;
 }
 
-.worldmap{
+#worldmap{
     stroke-linecap:round;
     stroke-linejoin:"round";
     stroke-width:".5";
@@ -174,14 +180,29 @@ h2 .ship { font-weight:700;}
 
 /*-------------------------- TABLE ---------------------------*/
 
-#heatmap{
-    display:block;
+#chart{
+    /* display:block; */
     z-index: 2;
     width: 100%;
     height: 100vh;
-    padding-left: 5%;
+    /* background-color: #3b2730; */
+}
+#bubblecanvas {
+    /* display: block; */
+    align-items:center;
+    justify-content: left;
+    align-content: center;
+    overflow: visible;
 }
 
+.bubble-wrapper{
+    display: block;
+    align-content: center;
+    align-items: center;
+    padding-right: 5%;
+    height: 100%;
+    overflow: visible;
+}
 
 /*--------------------------- TREEMAP --------------------------*/
 
@@ -190,19 +211,67 @@ h2 .ship { font-weight:700;}
     z-index: 3;
     width: 100%;
     height: 100vh;
-    padding-top: 5%;
-    background-color:white;
-}
 
+}
+.tree-wrapper{
+    display: flex;
+    padding-left: 2%;
+    align-items:center;
+    justify-content: left;
+    align-content: center;
+    padding-right: 10%;
+    width: 90%;
+    height: 95%;
+}
 #treecanvas {
-    width: 100%;
-    height: 100%;
+    display: flex;
+    align-items:center;
+    justify-content: left;
+    align-content: center;
+    justify-content: left;
 }
 
+.tree-wrapper rect{
 
+    stroke-width: 1px;
+}
 
 /*--------------------------- PORT --------------------------*/
 
+.Port h1 {
+    z-index: 2;
+    color: whitesmoke;
+    position: absolute;
+    top: 0;
+    margin: 5%;
+    margin-right: 20%;
+    left: 0;
+    text-align: left;  
+}
+
+div.Port p1{
+    z-index: 1;
+    color: whitesmoke;
+    position: absolute;
+    top: 0;
+    padding-top: 15%;
+    margin: 5%;
+    padding-right: 40%;
+    left: 0;
+    text-align: left;
+}
+
+div.Port h5{
+    z-index: 2;
+    color: whitesmoke;
+    position: absolute;
+    top: 0;
+    padding-top: 30%;
+    margin: 5%;
+    padding-right: 40%;
+    left: 0;
+    text-align: left;
+}
 
 .Port {
     position: absolute;
@@ -249,7 +318,7 @@ h2 .ship { font-weight:700;}
 .consumption{
     width: 100%;
     height: 100vh;
-    background-color: #355f66;
+
 }
 
 
