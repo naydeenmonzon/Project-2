@@ -1,21 +1,12 @@
-import os
 import pandas as pd
-from pandas.plotting import table
 import requests
-import json
-from config import key, bkey
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cbook, ticker, units
-import datetime
-import functools
-import re
+from config import key
+from jsonconvert import to_TEU_json
 
 
 def get_data():
 
     # ------------ Import ------------ #
-
     # Dictionary for the headers
     portVar = pd.read_html('https://api.census.gov/data/timeseries/intltrade/imports/porths/variables.html')[0]
     portDict = dict(zip(portVar["Name"], portVar["Label"].str.replace('15-digit ', '')))
@@ -28,32 +19,32 @@ def get_data():
     portDF = pd.DataFrame(portData, columns=portData[0]).drop([0]).rename(columns=portDict)
 
     port = portDF[~portDF['150-character Port Name'].str.contains("TOTAL")].drop(columns=['4-character Port Code']).rename(columns={'150-character Port Name':'Port','ISO-8601 Date/Time value':'Date'})
+    port['Date'] = pd.to_datetime(port['Date'])
+
 
     portCOL = port.columns.drop(['Port',"Date"])
     port[portCOL] = port[portCOL].apply(pd.to_numeric, errors='coerce')
 
-    # Consolidate Port by State
-    portST = port.copy()
-    portST['Port State'] = port['Port'].str[-2:]
+    portCT = port.groupby(['Date','Port']).sum().rename(columns={'Containerized Vessel Shipping Weight':'Weight'})
 
-    portST = portST.groupby(['Date','Port State']).sum().reset_index().rename(columns={'Containerized Vessel Shipping Weight':'Weight'})
-
-    cleanPort = portST[(portST.Weight != 0)]
 
     # Estimate TEU Count (Twenty Equivalent Count) = 1 Twenty Foot Container
 
-    portTEU = cleanPort.copy()
-    portTEU['TEU'] = portTEU['Weight'].floordiv(24000)
+    portCT = portCT[(portCT.Weight != 0)]
+    cityportTEU = portCT.copy()
+    cityportTEU['TEU'] = cityportTEU['Weight'].floordiv(24000)
 
 
-    # Heatmap - Total Container Count by State & Date
-    portTEUdf = portTEU.pivot(index="Date", columns="Port State", values="TEU")
-    portTEUdf.to_csv("./static/data/port.csv")
 
-    portTable = portTEUdf.to_html().replace('\n', '')
+    cityportTEU = cityportTEU.groupby(['Date','Port']).sum().sort_values('TEU')
+    cityportTEU = cityportTEU[(cityportTEU.TEU != 0)].reset_index()
 
-    cargo_data = {
-        'port_table': portTable
-    }
+
+    filename = "./static/data/cityportTEU2"
+
+    TEU_data = to_TEU_json(cityportTEU, filename)
+
+
+    cargo_data = TEU_data
 
     return(cargo_data)

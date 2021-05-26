@@ -21,10 +21,14 @@ const circHeight = 800
 let colorBubble = d3.scaleLinear()
     .domain([0, 5])
     .range(["hsl(184, 100%, 8%)", "hsl(20, 9%, 100%)"])
-    .interpolate(d3.interpolateHcl)
+    .interpolate(d3.interpolateHcl);
 
+
+// var mongodata = {cargo_data}
 let dataBubble = d3.json(bubble_url).then(function(data) {   
-    pack = data => d3.pack()
+
+
+  pack = data => d3.pack()
     .size([circWidth, circHeight])
     .padding(3)
   (d3.hierarchy(data)
@@ -64,9 +68,11 @@ let dataBubble = d3.json(bubble_url).then(function(data) {
       .join("text")
         .style("fill-opacity", d => d.parent === root ? 1 : 0)
         .style("display", d => d.parent === root ? "inline" : "none")
-        .text(d => d.data.name);
-  
-    zoomTo([root.x, root.y, root.r * 2]);
+        .text(d => `${d.data.name} ${format(d.value)}`)
+
+
+    
+        zoomTo([root.x, root.y, root.r * 2]);
   
     function zoomTo(v) {
       const k = circWidth / v[2];
@@ -255,7 +261,7 @@ function tile(node, x0, y0, x1, y1) {
 /*----------------------------------------------------*/
 
 const treeWidth = 1600
-const treeHeight = 800
+const treeHeight = 900
 
 let treedata = d3.json('/static/data/endusedata2.json').then(function(data) {
   var name = d => d.ancestors().reverse().map(d => d.data.name).join("/")

@@ -17,7 +17,7 @@
         <section id="#section0"  class="page">
                 <div class="content loadpage">
                 <span class="overlay"></span>
-
+                <video src="/static/videos/mixkit-top-aerial-shot-of-a-cargo-ship-sailing-in-sea-35454-medium_Slomo.mp4" muted loop autoplay></video>
                 <div class="headline">
                     <h2>I <span class='ship'>SHIP</span> You Not!</h2>
                     <p class="p1">The pandemic has disrupted trade to an extraordinary degree, driving up the cost of shipping goods and adding a fresh challenge to the global economic recovery. </p>
@@ -31,8 +31,9 @@
         <section id="#section1" class="page">
             <div class="content intro">
                 <div  class="virus">
-                    <div class="output">
-                        <p class="p1"><span id="text"></span><span id="cursor">|</span></p>
+                    <div class="text-box">
+                        <h2>Pandemic wave creates North American bottleneck</h2>
+                        <p class="p1"><span id="text">"The virus has thrown off the choreography of moving cargo from one continent to another. Americans stuck in their homes have set off a surge of orders from factories in China, much of it carried across the Pacific in containers — the metal boxes that move goods in towering stacks atop enormous vessels. As households in the United States have filled bedrooms with office furniture and basements with treadmills, the demand for shipping has outstripped the availability of containers in Asia, yielding shortages there just as the boxes pile up at American ports."</span><span id="cursor">|</span></p>
                     </div>
                 </div>
                 <div class="map">
@@ -41,20 +42,26 @@
             </div>
         </section>
 
+
         <section id="spacer" class="page empty"><div class="spacer"></div></section>
 
+        
         <section id="#section2" class="page">
-            <div id="treemap", class="content treechart">
+            <div id="treemap" class="content treechart consumption">  
+                <h2>What US Coonsumers are buying...</h2>
+                <p>Source of data: US Census Bureau<br>Value is based on sum of combined total weight, item count and shipping value.</p>   
                 <div class="tree-wrapper">
                 <svg id='treecanvas'></svg>
                 </div>
             </div>
         </section>
 
+
         <section id="spacer" class="page empty"><div class="spacer"></div></section>
 
+
         <section id="#section3" class="page">
-            <div class="content Port">
+            <div class="column content USPort">
                 <div class="row justify-content-around">
                     <div id="a1" class="column-3"></div>
                     <div id="a2" class="column-3"></div>
@@ -63,48 +70,109 @@
                     <div id="a5" class="column-3"></div>
                 </div>
                 <video muted loop autoplay> <source src="/static/videos/mixkit-cargo-ship-port-seen-from-above-36264-medium.mp4"></video>
-                <h1 class="port">Los Angeles Port </h1>
+                <h2 class="port">US Port </h1>
                 <p1>
-                    The port has been struggling to keep up with demand since February, when it was unable to accommodate all the arriving ships and many of them were forced to anchor before unloading. But the situation is improving. The number of ships that were sent straight to holding has dropped from 90% in February to 65% in April.<br>
-                     The average time a container sits at the port terminal before being shipped by rail or truck is also decreasing, from an average of five days in February to 4.2 in April.<br>
-                     One issue driving the congestion is an imbalance of imports to exports, Seroka said. Exports have dropped 27 out of the last 30 months at the Port of LA, with the import to export ratio last month being “the highest gap we’ve seen,” he added. In April it was 4.3 to 1, compared with 4 to 1 in March.<br></p1>
-
+                Although China resumed exports earlier than the rest of the world, other countries faced and continue to face restrictions and labor cuts. There is still a massive 40 percent imbalance in North America. 
+                <br><br>
+                The port has been struggling to keep up with demand since February, when it was unable to accommodate all the arriving ships and many of them were forced to anchor before unloading.
+                <br><br>
+                There was no time to clear the very large backlog of containers with limited workers before more started arriving. For every 100 containers that arrive only 40 are exported… 60 out of every 100 containers continue to accumulate, which is a staggering figure considering the China to USA trade route sustains on average 900,000 TEUs per month! And that is during a normal year! The current shipping volume is at record highs this quarter!
+                <br><br>
+                Besides, there was a catastrophic labor shortage in American ports. And it was not just about docks and warehouses. Due to border restrictions, the work of customs was also partially suspended.
+                </p1>
                 <h5><span>The scramble for empty containers continues.</span> <br><span> There are plenty of containers. They’re just not in the right location.</span></h5>
-                </p>
             </div>
         </section>
 
-        <section id="spacer" class="page empty"><div class="spacer"></div></section>
+
+        <section id="spacer" class="page empty"><div class="spacer" ></div></section>
+
 
         <section id="#section4" class="page">
-            <div id="chart" class="content chart">
+            <div id="chart" class="content chart port">
+                <h2>Overview of how import cargo into US Port</h2>
+                <p> Source of data: US Census Bureau <br>
+                    Value is based on sum of combined estimated total Shipping Weight and Estimated Container Count.
+                </p>
                 <div class="bubble-wrapper">
                 <svg id='bubblecanvas'></svg>
                 </div>
             </div>
         </section>
 
-        <section id="spacer" class="page empty"><div class="spacer"></div></section>
+        <section id="spacer" class="page empty"><div class="spacer" style="margin-bottom: 300px;"></div></section>
 
         <section id="#section5" class="page">
-            <div class="content consumption">
-                <header>
-                    <h1>end</h1>
-                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sint, architecto aliquid ea, quaerat in accusamus cum amet sit eaque eius commodi ab voluptatibus, magnam nihil voluptas iure atque velit autem.</p>
-                </header>
+            <div class="wrapper d-flex flex-nowrap content global" id="global">
+                <section class="globalArticle section1 d-flex justify-content-center align-items-center" >
+                    <h2 class="p-2 flex-fill bd-highlight">Food is piling up in all the wrong places!</h1>
+                </section>
+                <section class="globalArticle section1 d-flex justify-content-center align-items-center" >
+                    <p>Thanks to carriers hauling empty shipping containers global competition for the ribbed steel containers.</p>
+                </section>
+                <section class="globalArticle section1 d-flex justify-content-center  mb-3 bd-highlight" >
+                    <div class="mr-auto p-2 bd-highlight align-self-start"><p >Thailand can’t ship its rice…</p></div>
+                    <div class="mr-auto p-2 bd-highlight align-self-center"><p>Canada is stuck with peas…</p></div>
+                    <div class="mr-auto p-2 bd-highlight align-self-end"><p>India can’t offload its mountain of sugar.</p></div>
+                </section>
+                <section class="globalArticle section1 d-flex justify-content-center align-items-center " >
+                    <div class="mr-auto p-2 bd-highlight align-self-start"><p>Shipping empty boxes back to China has become so profitable that even some American soybean shippers are having to fight for containers to supply hungry Asian buyers.</p></div>
+                    <div class="mr-auto p-2 bd-highlight align-self-end"><p>In the UK… “We have goods that we are unable to ship because we haven’t been able to get containers,” I don’t think we’ve had a single boat dock on time. We are constantly havingcontainers put back”</p></div>
+                </section>
+                <section class="globalArticle section2">
+                    <h2>Mitigating the problem<br><em style="font-size: .7em;">   ...and extra profits?</em></h1>
+                    <p>Carriers jump on lucrative transpacific profits...</p>
+                    <p>Container shipping rates have been surging on all East to West shipping routes since May, with the highest rate upturn hitting the transpacific. 
+                    <br>Before 2020, transporting a standard 40-foot (12-meter) container on a ship sailing from a Chinese port cost about $1,000 (€840) — currently, one must pay up to $10,000.
+                    <br>Eastbound container freight rates have not just increased a lot since the beginning of the
+                    <br>COVID-19 outbreak; they have more than doubled, eclipsing all historical highs.</p>
+                    <p>But many Ocean Carriers claimed when the pandemic started, many factories temporarily closed which caused many containers to be stopped at ports.  Therefor to the stabilize costs and theerosion of ocean rates, carriers reduced the number of vessels out at sea.
+                    <br>Not only did this put the brakes on import and export, but it also meant empty containers were not picked up.</p>
+                    
+                <div class="center-marker"></div>
             </div>
         </section>
+
+
+
+
+
 
         <div class="section_nav">
             <ul>
             <li><a class="active" href="#section0">Intro</a></li>
             <li><a href="#section1">Covid</a></li>
-            <li><a href="#section2">TreeMap</a></li>
+            <li><a href="#section2">US Consumption</a></li>
             <li><a href="#section3">Port Congestion</a></li>
             <li><a href="#section4">Bubbly</a></li>
-            <li><a href="#section5">US Consumption</a></li>
+            <li><a href="#section5">World Wide Problem</a></li>
             </ul>
         </div>
+
+
+<div class="box-container">
+<div class="cont box 1"><img src="/static/images/Asset 3.png" id="cont 1" alt="" width="100%"></div>
+<div class="cont box 2"><img src="/static/images/Asset 4.png" id="cont 2" alt="" width="100%"></div>
+<div class="cont box 3"> <img src="/static/images/Asset 5.png" id="cont 3" alt="" width="100%"></div>
+<div class="cont box 4"><img src="/static/images/Asset 6.png" id="cont 4" alt="" width="100%"></div>
+<div class="cont box 5"><img src="/static/images/Asset 8.png" id="cont 5" alt="" width="100%"></div>
+<div class="cont box 6"><img src="/static/images/Asset 9.png" id="cont 6" alt="" width="200"></div>
+<div class="cont box 7"><img src="/static/images/Asset 10.png" id="cont 7" alt="" width="200"></div>
+<div class="cont box 8"><img src="/static/images/Asset 11.png" id="cont 8" alt="" width="200"></div>
+<div class="cont box 9"><img src="/static/images/Asset 12.png" id="cont 9" alt="" width="200"></div>
+<div class="cont box 10"><img src="/static/images/Asset 13.png" id="cont 10" alt="" width="200"></div>
+<div class="cont box 11"> <img src="/static/images/Asset 14.png" id="cont 11" alt="" width="200"></div>
+<div class="cont box 12"><img src="/static/images/Asset 15.png" id="cont 12" alt="" width="200"></div>
+<div class="cont box 13"><img src="/static/images/Asset 16.png" id="cont 13" alt="" width="200"></div>
+<div class="cont box 14"><img src="/static/images/Asset 17.png" id="cont 14" alt="" width="200"></div>
+<div class="cont box 15"> <img src="/static/images/Asset 18.png" id="cont 15" alt="" width="200"></div>
+<div class="cont box 16"><img src="/static/images/Asset 19.png" id="cont 16" alt="" width="200"></div>
+<div class="cont box 17"><img src="/static/images/Asset 20.png" id="cont 17" alt="" width="200"></div>
+<div class="cont box 18"><img src="/static/images/Asset 21.png" id="cont 18" alt="" width="200"></div>
+<div class="cont box 19"><img src="/static/images/Asset 22.png" id="cont 19" alt="" width="200"></div>
+<div class="cont box 20"><img src="/static/images/Asset 23.png" id="cont 20" alt="" width="200"></div>
+</div>
+
         <script src="https://d3js.org/d3.v6.min.js"></script>
         <script src="https://d3js.org/d3-color.v2.min.js"></script>
         <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
@@ -113,8 +181,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/TextPlugin.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollToPlugin.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.js"></script>
-    <script type='text/javascript' src='/static/js/script.js'></script>
-    <script type='text/javascript' src='/static/js/d3script.js'></script>
+        <script type='text/javascript' src='/static/js/script.js'></script>
+        <script type='text/javascript' src='/static/js/d3script.js'></script>
 </body>
 
 </html>

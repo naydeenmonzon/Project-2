@@ -1,5 +1,4 @@
 
-
 *{
     box-sizing: border-box;
     margin: 0;
@@ -15,7 +14,7 @@ html, body {
 }
 .body {
     height: 100vh;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
     overflow-y: scroll;
 }
 .section_nav {
@@ -56,7 +55,7 @@ html, body {
     width: 50%;
 
 }
-/*-----------------------------------------------------------*/
+/*------------------------------------- SECTION 0 -------------------------------------*/
 
 
 .loadpage video {
@@ -67,7 +66,7 @@ html, body {
     z-index: 1;
 }
 
-.page .overlay {
+.loadpage .overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -80,7 +79,7 @@ html, body {
 }
 
 
-.headline {
+.loadpage .headline {
     display:flex;
     text-align: start;
     flex-flow: column;
@@ -90,21 +89,21 @@ html, body {
     z-index: 3;
     padding: 5%;
 }
-.headline h2{
-    font-size: 5em;
+.loadpage .headline h2{
+    font-size: 5.5em;
     line-height: 1em;
     margin-top: 10%;
     font-weight: 300;
 }
-.headline .p1{
-    font-size: 1em;
+.loadpage .headline .p1{
+    font-size: 1.5em;
     font-weight: 300;
     max-width: 50%;
-    color:rgba(196, 243, 255, 0.70);
+    color:#c4f3ffb3;
 }
-h2 .ship { font-weight:700;}
+.loadpage h2 .ship { font-weight:700;}
 
-.headline .p2 {
+.loadpage .p2 {
     position: relative;
     font-size: calc(0.10px + 1.2vw);
     margin-top: 5em;
@@ -135,7 +134,7 @@ h2 .ship { font-weight:700;}
 
 
 
-/*-----------------------------------------------------------*/
+/*------------------------------------- SECTION 1 -------------------------------------*/
 
 
 .virus .p1 {
@@ -146,8 +145,8 @@ h2 .ship { font-weight:700;}
     width: 80%;
     position: absolute;
 }
-#text {
-    font-family: 'Anonymous Pro', monospace;
+.virus .text-box {
+    /* font-family: 'Anonymous Pro', monospace; */
     color: rgba(255,255,255,.75);
     word-spacing: 1px;
 }
@@ -178,67 +177,46 @@ h2 .ship { font-weight:700;}
     height: 100%;
 }
 
-/*-------------------------- TABLE ---------------------------*/
+/*------------------------------------- SECTION 2 -------------------------------------*/
 
-#chart{
-    /* display:block; */
-    z-index: 2;
+#treemap h2 {
+    position: relative;
     width: 100%;
-    height: 100vh;
-    /* background-color: #3b2730; */
-}
-#bubblecanvas {
-    /* display: block; */
-    align-items:center;
-    justify-content: left;
-    align-content: center;
-    overflow: visible;
+    background-color: #3b2730f5;
+    z-index: 3;
+    color: whitesmoke;
+    text-align: left;
+    padding-left: 2%;
 }
 
-.bubble-wrapper{
-    display: block;
-    align-content: center;
-    align-items: center;
-    padding-right: 5%;
-    height: 100%;
-    overflow: visible;
+#treemap p {
+    position: relative;
+    background-color: #3b273083;
+    z-index: 3;
+    color: whitesmoke;
+    text-align: left;
+    padding-left: 2%;
 }
 
-/*--------------------------- TREEMAP --------------------------*/
 
 #treemap{
     display:block;
     z-index: 3;
     width: 100%;
     height: 100vh;
-
-}
-.tree-wrapper{
-    display: flex;
-    padding-left: 2%;
-    align-items:center;
-    justify-content: left;
-    align-content: center;
-    padding-right: 10%;
-    width: 90%;
-    height: 95%;
-}
-#treecanvas {
-    display: flex;
-    align-items:center;
-    justify-content: left;
-    align-content: center;
-    justify-content: left;
+    padding-right: 22%;
+    padding-left: 3%;
 }
 
 .tree-wrapper rect{
-
     stroke-width: 1px;
 }
 
-/*--------------------------- PORT --------------------------*/
 
-.Port h1 {
+
+/*------------------------------------- SECTION 3 -------------------------------------*/
+
+.USPort h2 {
     z-index: 2;
     color: whitesmoke;
     position: absolute;
@@ -249,19 +227,19 @@ h2 .ship { font-weight:700;}
     text-align: left;  
 }
 
-div.Port p1{
+.USPort p1 {
     z-index: 1;
     color: whitesmoke;
     position: absolute;
     top: 0;
-    padding-top: 15%;
+    padding-top: 10%;
     margin: 5%;
     padding-right: 40%;
     left: 0;
     text-align: left;
 }
 
-div.Port h5{
+div.USPort h5{
     z-index: 2;
     color: whitesmoke;
     position: absolute;
@@ -273,7 +251,7 @@ div.Port h5{
     text-align: left;
 }
 
-.Port {
+.USPort {
     position: absolute;
     left: 0;
     top: 0;
@@ -284,7 +262,7 @@ div.Port h5{
     z-index: 1;
 }
 
-.Port video{
+.USPort video{
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -292,7 +270,7 @@ div.Port h5{
     display: block
 }
 
-.Port header {
+.USPort header {
     position: absolute;
     left: 0;
     top: 0;
@@ -301,7 +279,7 @@ div.Port h5{
     z-index: 2;
 }
 
-.row {
+.USPort .row {
     display: flex;
     position: absolute;
     height: 100%;
@@ -313,13 +291,156 @@ div.Port h5{
 #a3 {width: 25%; background-color:black;}
 #a4 {width: 25%; background-color:black;}
 
-/*-----------------------------------------------------------*/
 
-.consumption{
+/*------------------------------------- SECTION 4 -------------------------------------*/
+
+
+.chart h2 {
+    position: relative;
+    width: 50%;
+    margin-left: 5%;
+    background-color: #3b2730f5;
+    z-index: 3;
+    color: whitesmoke;
+    text-align: left;
+    padding-left: 2%;
+}
+
+.chart p {
+    position: relative;
+    width: 50%;
+    margin-left: 5%;
+    background-color: #3b2730f5;
+    z-index: 3;
+    color: whitesmoke;
+    text-align: left;
+    padding-left: 2%;
+}
+
+#chart{
     width: 100%;
     height: 100vh;
+    /* background-color: #3b2730;  */
+}
+#bubblecanvas {
 
+    overflow: visible;
+}
+
+.bubble-wrapper{
+    margin-top: 150px;
+    position: relative;
+    padding-right: 5%;
+    height: 100%;
+    z-index: 1;
+    /* overflow: hidden; */
 }
 
 
+/*------------------------------------- SECTION 5 -------------------------------------*/
+
+
+div .global{
+    /* width: 200%; */
+    height: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+ } 
+
+.globalArticle {
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0;
+    padding-left: 5%;
+    padding-top: 10%;
+    padding-bottom: 10%;
+    padding-right: 20%;
+}
+
+.globalArticle.section2{
+    padding-right: 30%;
+ }
+
+.globalArticle.section1 h2{
+    font-size: 6em;
+    font-weight: 600;
+}
+
+.globalArticle.section1 p{
+    font-size: 2em;
+}
+
+/* .center-marker {
+position: fixed;
+width: 2px;
+height: 100vh;
+background: tomato;
+top: 0;
+left: calc(50vw - 1px);
+} */
+  
+.globalArticle {
+    font-weight: 400;
+    transition: color 2s;
+    transition-timing-function:ease-in-out;
+}
+  
+section.active {
+    color: rgb(194, 165, 87);
+}
+
+.globalArticle.section2 h2{
+    font-size: 3.5em;
+    font-weight: 500;
+    white-space: pre-wrap;
+}
+
+.globalArticle.section2 p{
+    font-size: 1.2em;
+    padding-block-end: 20px;
+    color: rgb(255, 255, 255);
+    font-weight: 300;
+    
+}
+.globalArticle.section2.active{
+    color: rgb(255, 241, 202);
+}
+
+
+
+
+/* 
+
+
+.global {
+    width: 100%;
+    height: 100%;
+}
+
+
+.global.article-2 .after {
+    transform: translate(-100%, 0px);
+    background-color: #7cc4d1;
+}
+
+
+   */
+
+
+/*-----------------------------------------------------------*/
+
+div .box-container{
+    display: none;
+    padding: 0;
+    margin: 0;
+}
+
+div .cont{
+    display: none;
+    background-color: khaki;
+    width: 20%;
+    padding: 0;
+    margin: 0;
+}
 
